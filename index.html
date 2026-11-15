@@ -149,6 +149,32 @@ header.top a:focus-visible,.hero a:focus-visible,.contact-band a:focus-visible{o
 .contact-band a:hover{color:#fff}
 .contact-band p{color:var(--on-dark-muted)}
 footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--forest-2);color:var(--on-dark-muted);font-size:.9rem}
+/* ---------- PHOTO CAROUSEL ---------- */
+.carousel{margin-top:.9rem;max-width:30rem}
+.carousel [hidden]{display:none}
+.carousel-frame{position:relative}
+.carousel-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border:1px solid var(--line);border-radius:6px;scrollbar-width:none}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-slide{flex:0 0 100%;scroll-snap-align:center;margin:0;position:relative}
+.carousel-slide img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--sage-light)}
+.carousel-slide figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .85rem .6rem;color:#fff;font-size:.88rem;line-height:1.4;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:2.2rem;height:2.2rem;border:0;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.carousel-btn:hover{background:rgba(0,0,0,.75)}
+.carousel-btn.prev{left:.5rem}
+.carousel-btn.next{right:.5rem}
+.carousel-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.6rem}
+.carousel-dots button{width:.5rem;height:.5rem;padding:0;border:0;border-radius:50%;background:var(--line);cursor:pointer}
+.carousel-dots button.on{background:var(--moss)}
+@media (prefers-reduced-motion:reduce){.carousel-track{scroll-behavior:auto}}
+
+/* Small version for the left column */
+.carousel.mini{max-width:10rem;margin-top:.8rem}
+.carousel.mini .carousel-slide img{aspect-ratio:1/1}
+.carousel.mini .carousel-slide figcaption{font-size:.7rem;padding:1rem .5rem .4rem;line-height:1.3}
+.carousel.mini .carousel-btn{width:1.5rem;height:1.5rem;font-size:1rem}
+.carousel.mini .carousel-btn.prev{left:.3rem}
+.carousel.mini .carousel-btn.next{right:.3rem}
+.carousel.mini .carousel-dots button{width:.4rem;height:.4rem}
 </style>
 </head>
 
@@ -215,8 +241,23 @@ footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--forest-2);
   <p class="lede">Co-op terms, design teams, and teaching.</p>
 
   <!-- COPY an entry (from <div class="entry"> to its closing </div>) to add another role. -->
-  <div class="entry">
-    <div class="when">Apr 2026 to Aug 2026</div>
+    <div class="entry">
+    <div class="when">Apr 2026 to Aug 2026
+
+      <div class="carousel mini">
+        <div class="carousel-frame">
+          <div class="carousel-track" tabindex="0" role="group" aria-label="Photos">
+            <figure class="carousel-slide">
+              <img src="images/maclean.png" alt="Describe the photo" onerror="this.closest('figure').style.display='none'">
+            </figure>
+          </div>
+          <button class="carousel-btn prev" type="button" aria-label="Previous photo">&lsaquo;</button>
+          <button class="carousel-btn next" type="button" aria-label="Next photo">&rsaquo;</button>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+
+    </div>
     <div>
       <h3>Engineering Intern</h3>
       <p class="where">MacLean Engineering, Sudbury, Ontario</p>
@@ -225,8 +266,27 @@ footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--forest-2);
       <ul class="tags"><li>SolidWorks</li><li>DraftSight</li><li>CSA standards</li><li>Engineering drawings</li></ul>
     </div>
   </div>
+
   <div class="entry">
-    <div class="when">Apr 2025 to Aug 2025</div>
+    <div class="when">Apr 2025 to Aug 2025
+
+      <div class="carousel mini">
+        <div class="carousel-frame">
+          <div class="carousel-track" tabindex="0" role="group" aria-label="Photos">
+            <figure class="carousel-slide">
+              <img src="images/adaptiiv1.png" alt="Describe the photo" onerror="this.closest('figure').style.display='none'">
+            </figure>
+            <figure class="carousel-slide">
+              <img src="images/adaptiiv2.png" alt="Describe the photo" onerror="this.closest('figure').style.display='none'">
+            </figure>
+          </div>
+          <button class="carousel-btn prev" type="button" aria-label="Previous photo">&lsaquo;</button>
+          <button class="carousel-btn next" type="button" aria-label="Next photo">&rsaquo;</button>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+
+    </div>
     <div>
       <h3>Production Generalist</h3>
       <p class="where">Adaptiiv Medical Technologies, Halifax, Nova Scotia</p>
@@ -429,5 +489,51 @@ footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--forest-2);
 </div>
 
 </main>
+<script>
+document.querySelectorAll('.carousel').forEach(function (c) {
+  var track = c.querySelector('.carousel-track');
+  var prev = c.querySelector('.prev');
+  var next = c.querySelector('.next');
+  var dots = c.querySelector('.carousel-dots');
+
+  function slides() {
+    return Array.prototype.filter.call(track.children, function (f) {
+      return f.style.display !== 'none';
+    });
+  }
+
+  function setup() {
+    var n = slides().length;
+    if (n === 0) { c.style.display = 'none'; return; }
+    if (n < 2) { prev.hidden = true; next.hidden = true; dots.hidden = true; return; }
+
+    for (var i = 0; i < n; i++) {
+      (function (i) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Go to photo ' + (i + 1));
+        b.addEventListener('click', function () {
+          track.scrollTo({ left: i * track.clientWidth });
+        });
+        dots.appendChild(b);
+      })(i);
+    }
+
+    function update() {
+      var idx = Math.round(track.scrollLeft / track.clientWidth) || 0;
+      Array.prototype.forEach.call(dots.children, function (d, i) {
+        d.classList.toggle('on', i === idx);
+      });
+    }
+
+    track.addEventListener('scroll', update);
+    prev.addEventListener('click', function () { track.scrollBy({ left: -track.clientWidth }); });
+    next.addEventListener('click', function () { track.scrollBy({ left: track.clientWidth }); });
+    update();
+  }
+
+  window.addEventListener('load', setup);
+});
+</script>
 </body>
 </html>
